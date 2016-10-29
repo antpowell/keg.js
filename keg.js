@@ -1,6 +1,6 @@
 // keg.js
 
-var keg;
+var keg = {};
 
 keg.create = function(object) {
     console.log('create', object);
