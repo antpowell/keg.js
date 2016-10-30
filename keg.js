@@ -2,21 +2,43 @@
 
 var keg = {};
 
-keg.create = function(object) {
-    console.log('create', object);
+keg.initialize = function(apiKey) {
+    this.apiKey = apiKey;
+    this.base = 'ira2kex426.execute-api.us-east-1.amazonaws.com/prod';
 }
 
-keg.read = function(selector) {
-    console.log('read', selector);
+keg.create = function(object, cb) {
+    request('create', 'POST', JSON.stringify(object), cb);
 }
 
-keg.update = function(object, newObject) {
-    console.log('update', object, newObject);
+keg.read = function(selector, cb) {
+    request('read', 'GET', 'selector='+selector, cb);
 }
 
-keg.delete = function(selector) {
-    console.log('delete', selector);
+// keg.update = function(object, newObject, cb) {
+//     request('update', 'PUT', { "object": object, "newObject": newObject }, cb);
+// }
+
+keg.delete = function(id, cb) {
+    request('destroy', 'DELETE', "{ 'id':" + id +  "}", cb);
 }
 
-
-exports.keg = keg;
+var request = function(method, type, opts, cb) {
+    var url = "https://" + keg.base + '/' + method + '?apiKey=' + keg.apiKey;
+    console.log(url);
+    console.log((opts));
+    $.ajax({
+        type: type,
+        headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' 
+        },
+        url: url,
+        dataType: 'json',
+        data: opts
+    }).done(function(res) {
+        cb(null, res);
+    }).fail(function(err) {
+        cb(err);
+    });
+}
